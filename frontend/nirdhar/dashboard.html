@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Dashboard - Nirdhar Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+    
+    <!-- Chart.js & Leaflet.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        body { background: #05080f; color: #e2e8f0; font-family: 'Outfit', sans-serif; margin: 0; padding: 0; }
+        .dashboard-header { background: #090d16; padding: 20px 40px; border-bottom: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; align-items: center; }
+        .dashboard-header h1 { margin: 0; font-size: 24px; font-weight: 600; display: flex; align-items: center; gap: 10px; }
+        .badge-live { background: rgba(239, 68, 68, 0.2); color: #ef4444; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: bold; border: 1px solid rgba(239,68,68,0.4); animation: pulse 2s infinite; }
+        
+        .grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 24px; padding: 30px 40px; max-width: 1400px; margin: 0 auto; }
+        .card { background: #090d16; border: 1px solid rgba(255,255,255,0.08); border-radius: 12px; padding: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .card h3 { margin-top: 0; font-size: 16px; color: #94a3b8; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; }
+        
+        .kpi-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .kpi-card { background: linear-gradient(145deg, #0f1524, #0a0e1a); border: 1px solid rgba(255,255,255,0.05); border-radius: 10px; padding: 20px; text-align: center; }
+        .kpi-card .value { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+        .kpi-card .label { font-size: 13px; color: #64748b; }
+        
+        #map { height: 350px; border-radius: 8px; width: 100%; border: 1px solid rgba(255,255,255,0.1); }
+        
+        .ledger-feed { max-height: 400px; overflow-y: auto; padding-right: 10px; }
+        .feed-item { background: rgba(255,255,255,0.02); border-left: 3px solid #3b82f6; padding: 12px 16px; margin-bottom: 12px; border-radius: 0 6px 6px 0; }
+        .feed-item .ward { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #f59e0b; }
+        .feed-item .title { font-size: 15px; font-weight: 500; margin: 4px 0; }
+        
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #05080f; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+    </style>
+</head>
+<body>
+
+    <div class="dashboard-header">
+        <h1><span style="color:#3b82f6;">Nirdhar</span> Command Center <span class="badge-live">● LIVE</span></h1>
+        <a href="/" style="color: #94a3b8; text-decoration: none; font-size: 14px; border: 1px solid #334155; padding: 6px 12px; border-radius: 6px; background: rgba(255,255,255,0.05);">← Back to Citizen Portal</a>
+    </div>
+
+    <div class="grid-container">
+        
+        <!-- LEFT COLUMN -->
+        <div class="main-column">
+            <div class="kpi-row">
+                <div class="kpi-card">
+                    <div class="value" id="kpiTotal">0</div>
+                    <div class="label">Total Grievances</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value" id="kpiResolved" style="color: #10b981;">0</div>
+                    <div class="label">Projects Completed</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value" id="kpiBudget" style="color: #f59e0b;">₹0 L</div>
+                    <div class="label">Budget Utilized</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="value" id="kpiSat" style="color: #eab308;">0.0</div>
+                    <div class="label">Avg Satisfaction ★</div>
+                </div>
+            </div>
+
+            <div class="card" style="margin-bottom: 24px;">
+                <h3>🗺️ Live Hotspot Map</h3>
+                <div id="map"></div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <div class="card">
+                    <h3>📊 Grievances by Sector</h3>
+                    <div style="height: 250px; display: flex; justify-content: center;">
+                        <canvas id="sectorChart"></canvas>
+                    </div>
+                </div>
+                <div class="card">
+                    <h3>💰 Budget Allocation (Lakhs)</h3>
+                    <div style="height: 250px; display: flex; justify-content: center; align-items: center;">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="side-column">
+            <div class="card" style="height: 100%;">
+                <h3>🏆 Priority Ledger Feed</h3>
+                <div class="ledger-feed" id="liveFeed" style="max-height: 750px;">
+                    <!-- Feed items populated here -->
+                    <div style="text-align:center; padding: 20px; color:#64748b;">Loading feed...</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // Initialize Map restricted to India
+        const indiaBounds = [
+            [6.0, 68.0], // Southwest coords
+            [36.0, 98.0] // Northeast coords
+        ];
+        
+        const map = L.map('map', {
+            center: [20.5937, 78.9629],
+            zoom: 5,
+            minZoom: 4,
+            maxBounds: indiaBounds,
+            maxBoundsViscosity: 1.0
+        }); 
+        
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            attribution: '© OpenStreetMap contributors © CARTO',
+            noWrap: true
+        }).addTo(map);
+
+        // Fetch Data and Populate Dashboard
+        async function loadDashboard() {
+            try {
+                // 1. Fetch Stats
+                const statsRes = await fetch('/api/stats');
+                const stats = await statsRes.json();
+                document.getElementById('kpiTotal').innerText = stats.total_submissions;
+                document.getElementById('kpiResolved').innerText = stats.completed_count;
+                document.getElementById('kpiBudget').innerText = '₹' + stats.utilized_budget_lakhs + ' L';
+                document.getElementById('kpiSat').innerText = stats.average_satisfaction;
+
+                // Budget Chart
+                const ctxBudget = document.getElementById('budgetChart').getContext('2d');
+                new Chart(ctxBudget, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Utilized', 'Remaining'],
+                        datasets: [{
+                            label: 'Budget (Lakhs)',
+                            data: [stats.utilized_budget_lakhs, stats.remaining_budget_lakhs],
+                            backgroundColor: ['#f59e0b', '#334155'],
+                            borderRadius: 6
+                        }]
+                    },
+                    options: { 
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } }, 
+                        scales: { 
+                            y: { beginAtZero: true, grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#94a3b8' } }, 
+                            x: { grid: { display: false }, ticks: { color: '#94a3b8' } } 
+                        } 
+                    }
+                });
+
+                // 2. Fetch Hotspots
+                const hsRes = await fetch('/api/hotspots');
+                const hotspots = await hsRes.json();
+                
+                const sectorCounts = { education: 0, infrastructure: 0, utilities: 0, skilling: 0, general: 0 };
+                
+                if (hotspots.length > 0) {
+                    const bounds = [];
+                    hotspots.forEach(h => {
+                        // Plot on map
+                        const lat = 19.0 + (h.lat / 1000); // Mock coordinates around Maharashtra
+                        const lng = 73.0 + (h.lng / 1000);
+                        const radius = h.total_mentions * 2000;
+                        const color = h.severity === 'High' ? '#ef4444' : '#f59e0b';
+                        
+                        L.circle([lat, lng], {
+                            color: color,
+                            fillColor: color,
+                            fillOpacity: 0.5,
+                            radius: radius
+                        }).addTo(map).bindPopup(`<b>${h.name}</b><br>${h.top_category.toUpperCase()}: ${h.total_mentions} mentions`);
+                        
+                        bounds.push([lat, lng]);
+
+                        // Accumulate sector counts for pie chart
+                        if (sectorCounts[h.top_category] !== undefined) {
+                            sectorCounts[h.top_category] += h.total_mentions;
+                        } else {
+                            sectorCounts.general += h.total_mentions;
+                        }
+                    });
+                    map.fitBounds(bounds, { padding: [50, 50] });
+                }
+
+                // Sector Chart
+                const ctxSector = document.getElementById('sectorChart').getContext('2d');
+                new Chart(ctxSector, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Infrastructure', 'Education', 'Utilities', 'Skilling', 'General'],
+                        datasets: [{
+                            data: [sectorCounts.infrastructure, sectorCounts.education, sectorCounts.utilities, sectorCounts.skilling, sectorCounts.general],
+                            backgroundColor: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#64748b'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: { 
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'right', labels: { color: '#94a3b8', padding: 20 } } }, 
+                        cutout: '75%' 
+                    }
+                });
+
+                // 3. Fetch Ledger Feed
+                const ledRes = await fetch('/api/ledger');
+                const ledger = await ledRes.json();
+                
+                const feedContainer = document.getElementById('liveFeed');
+                feedContainer.innerHTML = ''; // clear
+                
+                if (ledger.length === 0) {
+                    feedContainer.innerHTML = '<div style="text-align:center; padding: 20px; color:#64748b;">No active priorities in the ledger.</div>';
+                }
+
+                ledger.slice(0, 15).forEach((item, index) => {
+                    const el = document.createElement('div');
+                    el.className = 'feed-item';
+                    el.innerHTML = `
+                        <div class="ward">${item.ward_name.toUpperCase()}</div>
+                        <div class="title">High Demand: ${item.category.charAt(0).toUpperCase() + item.category.slice(1)}</div>
+                        <div style="font-size:12px; color:#94a3b8;">Demand Score: <b style="color:#fff">${item.demand_score}</b> | Mentions: ${item.mentions}</div>
+                    `;
+                    feedContainer.appendChild(el);
+                });
+
+            } catch(e) {
+                console.error("Dashboard error", e);
+                document.getElementById('liveFeed').innerHTML = '<div style="text-align:center; padding: 20px; color:#ef4444;">Error loading dashboard data.</div>';
+            }
+        }
+
+        window.onload = loadDashboard;
+    </script>
+</body>
+</html>

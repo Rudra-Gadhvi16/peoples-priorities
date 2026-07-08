@@ -44,6 +44,10 @@ app.mount("/images", StaticFiles(directory=os.path.join(frontend_dir, "images"))
 def serve_index():
     return FileResponse(os.path.join(frontend_dir, "index.html"))
 
+@app.get("/dashboard")
+def serve_dashboard():
+    return FileResponse(os.path.join(frontend_dir, "dashboard.html"))
+
 def extract_ward_from_text(text: str) -> str:
     # A simple mock ward extractor if not provided. In real life, Gemini can extract this.
     text_lower = text.lower()

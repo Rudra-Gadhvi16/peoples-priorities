@@ -24,7 +24,7 @@
     <a href="#home" class="active" onclick="navigateTo('#home', this)">Home</a>
     <a href="#citizen-services" onclick="navigateTo('#citizen-services', this)">Citizen Portal</a>
     <a href="#ledger" onclick="navigateTo('#ledger', this)">MP Command Center</a>
-    <a href="#map" onclick="navigateTo('#map', this)">Hotspots Map</a>
+    <a href="/dashboard" style="color: #3b82f6; font-weight: 600;">📈 Analytics Dashboard</a>
   </nav>
   <div style="display:flex; align-items:center; gap:16px;">
     <button class="brief-btn" onclick="openModal('briefModal')">About Nirdhar ↗</button>
@@ -92,7 +92,7 @@
   <!-- Hero panel status summary -->
   <div class="hero-panel" style="padding: 0; overflow: hidden; display: flex; flex-direction: column;">
     <div style="width: 100%; height: 150px; overflow: hidden; position: relative; border-bottom: 1px solid var(--card-border);">
-      <img src="images/hero_illustration.png" alt="Digital India Map Data Visualization" style="width:100%; height:100%; object-fit:cover;">
+      <img src="images/hero_illustration.webp" alt="Digital India Map Data Visualization" style="width:100%; height:100%; object-fit:cover;">
       <div style="position: absolute; inset: 0; background: linear-gradient(to top, #090d16, transparent 95%);"></div>
       <div style="position: absolute; bottom: 12px; left: 18px; font-family:'IBM Plex Mono', monospace; font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--accent-gold); font-weight:600; display:flex; align-items:center; gap:6px;">
         <span style="width:6px; height:6px; background:var(--accent-vermil); border-radius:50%; display:inline-block; animation:recPulse 1.5s infinite;"></span>
@@ -203,7 +203,7 @@
     </div>
     <div class="gallery-grid">
       <div class="gallery-card" onclick="filterByCategory('education')">
-        <img src="images/problem_education.png" alt="School overcrowding" loading="lazy">
+        <img src="images/problem_education.webp" alt="School overcrowding" loading="lazy">
         <div class="overlay-label">
           <span class="cat-badge education">Education</span>
           <div class="caption">School overcrowding — overflow details in Ward 4-7</div>
@@ -211,7 +211,7 @@
         </div>
       </div>
       <div class="gallery-card" onclick="filterByCategory('infrastructure')">
-        <img src="images/problem_infrastructure.png" alt="Flooded road" loading="lazy">
+        <img src="images/problem_infrastructure.webp" alt="Flooded road" loading="lazy">
         <div class="overlay-label">
           <span class="cat-badge infrastructure">Infrastructure</span>
           <div class="caption">Road flooding — blocked storm drainage in monsoon</div>
@@ -219,7 +219,7 @@
         </div>
       </div>
       <div class="gallery-card" onclick="filterByCategory('skilling')">
-        <img src="images/problem_skilling.png" alt="Youth unemployment" loading="lazy">
+        <img src="images/problem_skilling.webp" alt="Youth unemployment" loading="lazy">
         <div class="overlay-label">
           <span class="cat-badge skilling">Skilling</span>
           <div class="caption">Youth skilling centers — travel distances of 6km+</div>
@@ -227,7 +227,7 @@
         </div>
       </div>
       <div class="gallery-card" onclick="filterByCategory('utilities')">
-        <img src="images/problem_utilities.png" alt="Water scarcity" loading="lazy">
+        <img src="images/problem_utilities.webp" alt="Water scarcity" loading="lazy">
         <div class="overlay-label">
           <span class="cat-badge utilities">Utilities</span>
           <div class="caption">Water tanker dependency — cluster connections lacking</div>
@@ -246,7 +246,7 @@
   </div>
   <div class="success-grid">
     <div class="success-card">
-      <img src="images/completed_school.png" alt="Renovated school" loading="lazy">
+      <img src="images/completed_school.webp" alt="Renovated school" loading="lazy">
       <div class="tick">✓</div>
       <div class="success-label">
         <span class="success-badge">Education · Ward 4-7</span>
@@ -254,7 +254,7 @@
       </div>
     </div>
     <div class="success-card">
-      <img src="images/completed_road.png" alt="Rehabilitated drainage" loading="lazy">
+      <img src="images/completed_road.webp" alt="Rehabilitated drainage" loading="lazy">
       <div class="tick">✓</div>
       <div class="success-label">
         <span class="success-badge">Infrastructure · Ward 9</span>
@@ -262,7 +262,7 @@
       </div>
     </div>
     <div class="success-card">
-      <img src="images/completed_water.png" alt="Piped water supply" loading="lazy">
+      <img src="images/completed_water.webp" alt="Piped water supply" loading="lazy">
       <div class="tick">✓</div>
       <div class="success-label">
         <span class="success-badge">Utilities · Ward 11</span>
@@ -280,7 +280,7 @@
   </div>
   <div class="ground-strip">
     <div class="ground-card">
-      <img src="images/mp_field_visit.png" alt="MP field visit" loading="lazy">
+      <img src="images/mp_field_visit.webp" alt="MP field visit" loading="lazy">
       <div class="ground-label">
         <span class="ground-tag">Field Inspection</span>
         <div class="ground-caption">Hon. Rajesh Patil auditing local drainage project progress</div>
@@ -288,7 +288,7 @@
       </div>
     </div>
     <div class="ground-card">
-      <img src="images/citizen_meeting.png" alt="Gram Sabha" loading="lazy">
+      <img src="images/citizen_meeting.webp" alt="Gram Sabha" loading="lazy">
       <div class="ground-label">
         <span class="ground-tag">Gram Sabha Hearing</span>
         <div class="ground-caption">Community dialogue discussing active ledger priorities</div>
